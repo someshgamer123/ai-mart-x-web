@@ -41,7 +41,7 @@ def inject_global_vars():
     coins_rate = database.get_setting("coins_per_inr", Config.DEFAULT_COINS_PER_INR)
     return dict(current_user=user, coins_per_inr=coins_rate, support_handle=Config.SUPPORT_HANDLE)
 
-# ==================== BUYER ROUTES ====================
+# ==================== BUYER STOREFRONT & AUTH ====================
 
 @app.route("/")
 def index():
@@ -68,17 +68,17 @@ def login():
             if user:
                 session["user_email"] = user["email"]
                 session.permanent = True
-                flash("Login successful! Welcome to Ai Mart X.", "success")
+                flash("Signed in successfully. Welcome back!", "success")
                 return redirect(url_for("index"))
             else:
-                flash("Galat Gmail ya Password! Kripya dobara check karein.", "danger")
+                flash("Invalid email or password. Please try again.", "danger")
 
     return render_template("login.html")
 
 @app.route("/logout")
 def logout():
     session.pop("user_email", None)
-    flash("Aap logout ho chuke hain.", "info")
+    flash("You have been signed out.", "info")
     return redirect(url_for("index"))
 
 @app.route("/wallet")
@@ -112,10 +112,10 @@ def api_checkout():
 
     prod = database.get_product(product_id)
     if not prod:
-        return jsonify({"success": False, "message": "Product nahi mila."}), 404
+        return jsonify({"success": False, "message": "Product not found."}), 404
     
     if prod["stock"] < qty or qty <= 0:
-        return jsonify({"success": False, "message": f"Sirf {prod['stock']} items available hain."}), 400
+        return jsonify({"success": False, "message": f"Only {prod['stock']} items available in stock."}), 400
 
     total_price = prod["price"] * qty
     discount_pct = 0
@@ -126,10 +126,10 @@ def api_checkout():
 
     user = database.get_user_by_email(session["user_email"])
     if user.get("coins", 0) < total_price:
-        return jsonify({"success": False, "message": "Coins kam hain! Gift Code redeem karein ya friends ko invite karein."}), 400
+        return jsonify({"success": False, "message": "Insufficient Mart X Coins. Please redeem a gift code or invite friends."}), 400
 
     if not database.atomic_deduct_coins(session["user_email"], total_price):
-        return jsonify({"success": False, "message": "Balance deduction failed."}), 400
+        return jsonify({"success": False, "message": "Transaction failed. Balance mismatch."}), 400
 
     delivered_items = database.pop_product_stock_items(product_id, qty)
     order_id = database.create_order(session["user_email"], product_id, prod["name"], qty, total_price, delivered_items)
@@ -140,7 +140,7 @@ def api_checkout():
     return jsonify({
         "success": True,
         "order_id": order_id,
-        "message": "Order complete & delivered!",
+        "message": "Order completed! Your credentials have been delivered.",
         "delivered_items": delivered_items
     })
 
@@ -152,27 +152,28 @@ def api_redeem_gift_code():
     success, msg = database.redeem_gift_code(code, session["user_email"])
     return jsonify({"success": success, "message": msg})
 
-# ==================== 100% FIXED ADMIN LOGIN ====================
-# Users page par iska koi link nahi hoga
+# ==================== DEDICATED ADMIN PORTAL ====================
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
-        u = request.form.get("username", "").strip().lower()
+        u = request.form.get("username", "").strip()
         p = request.form.get("password", "").strip()
 
-        if u == Config.ADMIN_USERNAME and p == Config.ADMIN_PASSWORD:
+        if database.verify_admin_login(u, p):
             session["is_admin"] = True
             session.permanent = True
+            flash("Welcome back, Administrator.", "success")
             return redirect(url_for("admin_dashboard"))
         else:
-            flash("Galat Admin ID ya Password!", "danger")
+            flash("Invalid administrator credentials.", "danger")
             
     return render_template("admin_login.html")
 
 @app.route("/admin/logout")
 def admin_logout():
     session.pop("is_admin", None)
+    flash("Administrator logged out.", "info")
     return redirect(url_for("admin_login"))
 
 @app.route("/admin")
@@ -183,7 +184,28 @@ def admin_dashboard():
     rate = database.get_setting("coins_per_inr", Config.DEFAULT_COINS_PER_INR)
     upi = database.get_setting("admin_upi", Config.DEFAULT_ADMIN_UPI)
     refer_reward = database.get_setting("refer_coins_reward", "10")
-    return render_template("admin.html", stats=stats, products=products, rate=rate, upi=upi, refer_reward=refer_reward)
+    current_admin_user = database.get_current_admin_username()
+    return render_template(
+        "admin.html", 
+        stats=stats, 
+        products=products, 
+        rate=rate, 
+        upi=upi, 
+        refer_reward=refer_reward,
+        admin_username=current_admin_user
+    )
+
+@app.route("/admin/change-credentials", methods=["POST"])
+@admin_required
+def admin_change_credentials():
+    new_u = request.form.get("new_username", "")
+    new_p = request.form.get("new_password", "")
+    success, msg = database.update_admin_credentials(session.get("admin_user", "admin"), new_u, new_p)
+    if success:
+        flash(msg, "success")
+    else:
+        flash(msg, "danger")
+    return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/add-product", methods=["POST"])
 @admin_required
@@ -192,14 +214,14 @@ def admin_add_product():
     desc = request.form.get("description")
     price = int(request.form.get("price", 0))
     database.add_product(name, desc, price)
-    flash(f"Product '{name}' add ho gaya.", "success")
+    flash(f"Product '{name}' added successfully.", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/delete-product/<int:prod_id>", methods=["POST"])
 @admin_required
 def admin_del_product(prod_id):
     database.delete_product(prod_id)
-    flash("Product delete ho gaya.", "info")
+    flash("Product deleted from catalog.", "info")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/add-stock", methods=["POST"])
@@ -208,7 +230,7 @@ def admin_add_stock():
     p_id = int(request.form.get("product_id"))
     stock_text = request.form.get("stock_items", "")
     added, total = database.add_product_stock_items(p_id, stock_text)
-    flash(f"Total {added} items add hue. Stock ab: {total}.", "success")
+    flash(f"Added {added} stock items. Total stock is now {total}.", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/gen-gift-code", methods=["POST"])
@@ -216,7 +238,7 @@ def admin_add_stock():
 def admin_gen_gift_code():
     coins = int(request.form.get("coins", 0))
     code = database.create_admin_gift_code(coins)
-    flash(f"Gift Code: {code} (+{coins} Coins)", "success")
+    flash(f"Generated Gift Code: {code} (+{coins} Coins)", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/gen-coupon", methods=["POST"])
@@ -225,7 +247,7 @@ def admin_gen_coupon():
     code = request.form.get("code")
     pct = int(request.form.get("percent", 10))
     database.create_coupon(code, pct)
-    flash(f"Coupon '{code}' ({pct}% OFF) create ho gaya.", "success")
+    flash(f"Coupon '{code}' ({pct}% OFF) activated.", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/save-settings", methods=["POST"])
@@ -234,7 +256,7 @@ def admin_save_settings():
     database.set_setting("coins_per_inr", request.form.get("rate"))
     database.set_setting("admin_upi", request.form.get("upi"))
     database.set_setting("refer_coins_reward", request.form.get("refer_reward"))
-    flash("Settings update ho gayi.", "success")
+    flash("Store settings updated successfully.", "success")
     return redirect(url_for("admin_dashboard"))
 
 if __name__ == "__main__":
