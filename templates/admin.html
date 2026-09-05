@@ -2,17 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Authentication | Ai Mart X</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+  <title>Admin Control Gateway</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    body {
+      background: radial-gradient(circle at 50% 30%, #181d3b 0%, #060813 80%);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .box {
+      background: rgba(18, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      border-radius: 16px;
+      padding: 36px;
+      width: 380px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      background: #02040a;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-  <div class="card" style="width: 360px;">
-    <h2 style="margin-bottom: 16px; text-align: center;">👑 Admin Gate</h2>
+<body>
+  <div class="box">
+    <h2 style="text-align: center; margin-bottom: 8px;">👑 Admin Control Center</h2>
+    <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Ai Mart X Unified Engine</p>
     <form method="POST">
-      <input type="text" name="username" placeholder="Admin ID" required style="width: 100%; padding: 10px; margin-bottom: 12px; background: #000; border: 1px solid var(--border-card); color: #fff; border-radius: 8px;">
-      <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 10px; margin-bottom: 16px; background: #000; border: 1px solid var(--border-card); color: #fff; border-radius: 8px;">
-      <button class="btn" style="width: 100%;">Authorize</button>
+      <input type="text" name="username" placeholder="Admin Username" required>
+      <input type="password" name="password" placeholder="Admin Password" required>
+      <button class="btn">Authorize Entrance</button>
     </form>
   </div>
 </body>
