@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="margin-bottom: 24px;">
+  <h1>💎 My Wallet & Funds Hub</h1>
+  <p style="color: var(--text-muted);">Balance: <b style="color: #fbbf24;">{{ user.coins }} Mart X Coins</b> (Rate: ₹1 INR = {{ coins_per_inr }} Coins)</p>
+</div>
+
+<div class="grid" style="margin-bottom: 30px;">
+  <!-- Add Funds Card -->
+  <div class="card">
+    <div class="card-title">➕ Add Funds (Instant UPI)</div>
+    <p style="color: var(--text-muted); margin-bottom: 16px;">Generate auto-verifying UPI QR code.</p>
+    <input type="number" id="depositCoinsInput" placeholder="Enter coins (e.g. 500)" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff; margin-bottom: 12px;">
+    <button class="btn" onclick="startDeposit()">Generate UPI Payment QR</button>
+  </div>
+
+  <!-- Redeem Gift Code Card -->
+  <div class="card">
+    <div class="card-title">🎁 Redeem Gift Code</div>
+    <p style="color: var(--text-muted); margin-bottom: 16px;">Enter your MXGC-XXXX gift code:</p>
+    <input type="text" id="giftCodeInput" placeholder="MXGC-XXXX-YYYY" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff; margin-bottom: 12px;">
+    <button class="btn btn-secondary" onclick="redeemGiftCode()">Redeem Coins</button>
+  </div>
+</div>
+
+<!-- Modal for UPI QR Auto Verification -->
+<div class="modal" id="qrModal">
+  <div class="modal-content" style="text-align: center;">
+    <h3 style="margin-bottom: 12px;">Scan UPI QR to Pay</h3>
+    <p id="qrAmountText" style="color: #fbbf24; font-weight: 700;"></p>
+    <img id="qrImg" src="" alt="UPI QR" style="margin: 16px auto; border-radius: 12px; border: 2px solid var(--border-card);">
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Waiting for automatic confirmation from UPI engine... Don't close this window.</p>
+    <button class="btn btn-danger" style="margin-top: 14px;" onclick="closeQrModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Recent Deposits -->
+<div class="card">
+  <div class="card-title">📜 Deposit History</div>
+  <table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--border-card); text-align: left; color: var(--text-muted);">
+        <th style="padding: 8px;">ID</th>
+        <th style="padding: 8px;">Coins</th>
+        <th style="padding: 8px;">Amount</th>
+        <th style="padding: 8px;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in deposits %}
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+          <td style="padding: 8px; font-family: monospace;">{{ d.deposit_id }}</td>
+          <td style="padding: 8px;">+{{ d.coins_to_add }}</td>
+          <td style="padding: 8px;">₹{{ d.amount_fiat }}</td>
+          <td style="padding: 8px; color: {% if d.status == 'COMPLETED' %}var(--success){% else %}var(--gold){% endif %};">{{ d.status }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" style="padding: 12px; text-align: center; color: var(--text-muted);">No deposits found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+let pollInterval = null;
+
+async function startDeposit() {
+  const coins = document.getElementById("depositCoinsInput").value;
+  if (!coins || coins <= 0) return alert("Enter a valid coins amount");
+
+  const res = await fetch("/api/create-deposit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ coins: parseInt(coins) })
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById("qrAmountText").innerText = `Pay ₹${data.amount_inr} INR for +${data.coins} Coins`;
+    document.getElementById("qrImg").src = data.qr_url;
+    document.getElementById("qrModal").style.display = "flex";
+
+    // Auto-Poll for payment completion
+    pollInterval = setInterval(async () => {
+      const chk = await fetch(`/api/check-deposit-status/${data.deposit_id}`);
+      const cdata = await chk.json();
+      if (cdata.status === "COMPLETED") {
+        clearInterval(pollInterval);
+        alert("🎉 Payment Verified! Coins added to your wallet.");
+        window.location.reload();
+      }
+    }, 3000);
+  }
+}
+
+function closeQrModal() {
+  if (pollInterval) clearInterval(pollInterval);
+  document.getElementById("qrModal").style.display = "none";
+}
+
+async function redeemGiftCode() {
+  const code = document.getElementById("giftCodeInput").value.trim();
+  if (!code) return alert("Enter gift code");
+
+  const res = await fetch("/api/redeem-gift-code", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: code })
+  });
+  const data = await res.json();
+  alert(data.message);
+  if (data.success) window.location.reload();
+}
+</script>
+{% endblock %}

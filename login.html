@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width: 420px; margin: 40px auto;" class="card">
+  <h2 style="margin-bottom: 18px; text-align: center;">Ai Mart X Account</h2>
+  
+  <form method="POST">
+    <div style="margin-bottom: 14px;">
+      <label style="display: block; margin-bottom: 6px;">Username</label>
+      <input type="text" name="username" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
+    </div>
+    
+    <div style="margin-bottom: 14px;">
+      <label style="display: block; margin-bottom: 6px;">Password</label>
+      <input type="password" name="password" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
+    </div>
+
+    <!-- Registration Fields -->
+    <div id="registerFields" style="display: none;">
+      <div style="margin-bottom: 14px;">
+        <label style="display: block; margin-bottom: 6px;">Mobile Number</label>
+        <input type="text" name="phone" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
+      </div>
+      <div style="margin-bottom: 14px;">
+        <label style="display: block; margin-bottom: 6px;">Referral Code (Optional)</label>
+        <input type="text" name="ref_code" value="{{ request.args.get('ref', '') }}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
+      </div>
+    </div>
+
+    <input type="hidden" name="action" id="formAction" value="login">
+    <button type="submit" id="submitBtn" class="btn" style="width: 100%; margin-top: 10px;">Login</button>
+  </form>
+
+  <button class="btn btn-secondary" style="width: 100%; margin-top: 12px;" onclick="toggleRegisterMode()">Create New Account</button>
+</div>
+
+<script>
+function toggleRegisterMode() {
+  const reg = document.getElementById("registerFields");
+  const act = document.getElementById("formAction");
+  const btn = document.getElementById("submitBtn");
+  if (reg.style.display === "none") {
+    reg.style.display = "block";
+    act.value = "register";
+    btn.innerText = "Register Account";
+  } else {
+    reg.style.display = "none";
+    act.value = "login";
+    btn.innerText = "Login";
+  }
+}
+</script>
+{% endblock %}
