@@ -10,7 +10,7 @@ class Config:
     # Aapka MongoDB Connection URI
     MONGO_URI = os.getenv(
         "MONGO_URI", 
-        "mongodb+srv://mikunkumar242_db_user:somesh63723348@cluster0.huo0uug.mongodb.net/?appName=Cluster0"
+        "mongodb+srv://mikunkumar242_db_user:Somesh93372585sg@cluster0.huo0uug.mongodb.net/?appName=Cluster0"
     )
     
     DB_NAME = os.getenv("DB_NAME", "mart_x_web_db")
