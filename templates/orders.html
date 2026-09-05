@@ -1,28 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="margin-bottom: 24px;">
-  <h1>📦 My Purchased Orders</h1>
-  <p style="color: var(--text-muted);">Click on any credential block below to copy it with 1-tap.</p>
+<div style="margin-bottom: 28px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 6px;">My Order History</h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">Click on any credential block to copy it to your clipboard.</p>
 </div>
 
-<div style="display: flex; flex-direction: column; gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 16px;">
   {% for o in orders %}
     <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <span style="font-weight: 700; font-size: 1.1rem;">{{ o.product_name }} (Qty: {{ o.quantity }})</span>
-        <span style="font-family: monospace; color: var(--text-muted);">{{ o.order_id }}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <span style="font-weight: 600; font-size: 1.1rem;">{{ o.product_name }} (Qty: {{ o.quantity }})</span>
+        <span style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">{{ o.order_id }}</span>
       </div>
-      <p style="color: var(--gold); font-weight: 600; margin-bottom: 12px;">Paid: {{ o.total_coins }} Mart X Coins</p>
+      <p style="color: var(--gold); font-weight: 600; font-size: 0.95rem; margin-bottom: 14px;">Cost: {{ o.total_coins }} Coins</p>
       
       <div>
-        <b style="font-size: 0.9rem;">Delivered Credentials / Keys:</b>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Delivered Credentials / Keys:</p>
         {% for itm in o.delivered_items %}
           <div class="copy-box" onclick="copyText('{{ itm }}')">{{ itm }}</div>
         {% endfor %}
       </div>
     </div>
   {% else %}
-    <p>No orders placed yet.</p>
+    <div class="card" style="text-align: center; padding: 48px;">
+      <p style="color: var(--text-muted);">You have not placed any orders yet.</p>
+    </div>
   {% endfor %}
 </div>
 {% endblock %}
