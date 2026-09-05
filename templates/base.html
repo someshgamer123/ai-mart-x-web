@@ -7,15 +7,15 @@
   
   <style>
     :root {
-      --bg-main: #060813;
-      --bg-card: rgba(15, 20, 38, 0.75);
-      --border-card: rgba(255, 255, 255, 0.08);
+      --bg: #070913;
+      --card-bg: rgba(16, 21, 38, 0.75);
+      --border: rgba(255, 255, 255, 0.08);
       --primary: #4f46e5;
       --primary-glow: #6366f1;
       --accent: #06b6d4;
       --gold: #f59e0b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
       --success: #10b981;
       --danger: #ef4444;
     }
@@ -30,26 +30,49 @@
     }
 
     body {
-      background-color: var(--bg-main);
-      color: var(--text-main);
+      background: radial-gradient(circle at 50% 0%, #101530 0%, var(--bg) 70%);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
     }
 
-    /* Glass Navbar */
+    /* Navbar with Menu on the LEFT */
     .navbar {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(6, 8, 19, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-card);
+      background: rgba(7, 9, 19, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
       padding: 14px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .menu-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .menu-btn:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--primary-glow);
     }
 
     .brand {
@@ -59,19 +82,12 @@
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-
     .brand span {
       background: linear-gradient(135deg, var(--accent), var(--primary-glow));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
     }
 
     .badge-coins {
@@ -84,41 +100,24 @@
       font-size: 0.9rem;
     }
 
-    /* Menu Toggle Button */
-    .menu-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-card);
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s;
-    }
-
-    .menu-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    /* Slide Drawer Menu (All Bot Features) */
+    /* LEFT Slide Drawer Menu */
     .drawer {
       position: fixed;
       top: 0;
-      right: -320px;
+      left: -320px;
       width: 300px;
       height: 100%;
-      background: #0d1124;
-      border-left: 1px solid var(--border-card);
+      background: #0c1024;
+      border-right: 1px solid var(--border);
       z-index: 1000;
-      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 24px;
       display: flex;
       flex-direction: column;
-      box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+      box-shadow: 10px 0 40px rgba(0,0,0,0.7);
     }
-
     .drawer.open {
-      right: 0;
+      left: 0;
     }
 
     .drawer-header {
@@ -126,14 +125,14 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
-      border-bottom: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border);
       padding-bottom: 12px;
     }
 
     .drawer-close {
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: var(--muted);
       font-size: 1.6rem;
       cursor: pointer;
     }
@@ -148,16 +147,14 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      color: var(--text-main);
+      color: var(--text);
       text-decoration: none;
       padding: 12px 16px;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid transparent;
       transition: 0.2s;
-      font-size: 0.95rem;
     }
-
     .drawer-link:hover {
       background: rgba(79, 70, 229, 0.15);
       border-color: var(--primary-glow);
@@ -179,21 +176,18 @@
       gap: 24px;
     }
 
-    /* Luxury Cards */
     .card {
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-card);
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: 0.2s;
     }
-
     .card:hover {
       border-color: rgba(99, 102, 241, 0.4);
       transform: translateY(-2px);
@@ -208,21 +202,13 @@
     .stock-tag {
       display: inline-block;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 700;
       padding: 4px 10px;
       border-radius: 6px;
       margin-bottom: 12px;
     }
-
-    .in-stock {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-    }
-
-    .out-stock {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
-    }
+    .in-stock { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .out-stock { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
     .price-tag {
       font-size: 1.35rem;
@@ -231,7 +217,6 @@
       margin-bottom: 16px;
     }
 
-    /* Buttons */
     .btn {
       background: linear-gradient(135deg, var(--primary), var(--primary-glow));
       color: #fff;
@@ -245,22 +230,9 @@
       transition: 0.2s;
       display: inline-block;
     }
+    .btn:hover { filter: brightness(1.15); }
+    .btn-secondary { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); }
 
-    .btn:hover {
-      filter: brightness(1.15);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-card);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* 1-Tap Copyable Credential Box */
     .copy-box {
       background: #02040a;
       border: 1px dashed rgba(255, 255, 255, 0.25);
@@ -271,21 +243,12 @@
       margin-top: 8px;
       cursor: pointer;
       word-break: break-all;
-      transition: 0.2s;
-    }
-
-    .copy-box:hover {
-      border-color: #38bdf8;
-      background: #050a17;
     }
   </style>
 
   <!-- Anti-F12 & Security Script -->
   <script>
-    // 1. Right-Click Disable
     document.addEventListener('contextmenu', e => e.preventDefault(), false);
-
-    // 2. F12, Ctrl+Shift+I/J/C, Ctrl+U Disable
     document.addEventListener('keydown', function(e) {
       if (e.keyCode === 123) { e.preventDefault(); return false; }
       if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
@@ -295,32 +258,24 @@
         e.preventDefault(); return false;
       }
     }, false);
-
-    // 3. DevTools Debugger Trap
-    setInterval(function() {
-      const startTime = performance.now();
-      (function() {}['constructor']('debugger')());
-      if (performance.now() - startTime > 100) {
-        document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#05070f;color:#ff3366;font-family:sans-serif;font-size:24px;text-align:center;'>⛔ Security Alert: Developer Tools are Disabled!</div>";
-      }
-    }, 1000);
   </script>
 </head>
 <body>
 
-  <!-- Navigation Bar -->
+  <!-- Navigation Bar (Menu Button on the LEFT) -->
   <header class="navbar">
-    <a href="/" class="brand">⚡ <span>Ai Mart X Web</span></a>
-    <div class="nav-actions">
+    <div class="nav-left">
+      <button class="menu-btn" onclick="toggleDrawer()">☰ Menu</button>
+      <a href="/" class="brand">⚡ <span>Ai Mart X</span></a>
+    </div>
+    <div>
       {% if current_user %}
         <div class="badge-coins">🪙 {{ current_user.coins }} Coins</div>
       {% endif %}
-      <!-- Menu Button with all features -->
-      <button class="menu-btn" onclick="toggleDrawer()">☰ Menu</button>
     </div>
   </header>
 
-  <!-- Slide Drawer Menu -->
+  <!-- Left Slide Drawer Menu (Zero Admin Link) -->
   <div class="drawer" id="menuDrawer">
     <div class="drawer-header">
       <h3 style="font-size: 1.1rem;">Store Navigation</h3>
@@ -336,13 +291,12 @@
       {% else %}
         <a href="/login" class="drawer-link">🔑 Login / Register</a>
       {% endif %}
-      <hr style="border-color: var(--border-card); margin: 6px 0;">
+      <hr style="border-color: var(--border); margin: 8px 0;">
       <a href="https://t.me/{{ support_handle }}" target="_blank" class="drawer-link">🔔 Support (@{{ support_handle }})</a>
-      <a href="/admin/login" class="drawer-link" style="color: var(--text-muted); font-size: 0.85rem;">👑 Admin Panel</a>
     </div>
   </div>
 
-  <!-- Main Content -->
+  <!-- Main Body Content -->
   <main class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -366,15 +320,15 @@
 
     function copyText(text) {
       navigator.clipboard.writeText(text).then(() => {
-        alert("Copied to clipboard: " + text);
+        alert("Copied: " + text);
       });
     }
 
     async function openCheckout(productId, productName, price) {
-      const qty = prompt(`Enter quantity for ${productName}:`, "1");
+      const qty = prompt(`Quantity for ${productName}:`, "1");
       if (!qty || isNaN(qty) || parseInt(qty) <= 0) return;
 
-      const coupon = prompt("Have a discount coupon? Enter code (or leave empty):", "");
+      const coupon = prompt("Discount Coupon (Optional):", "");
 
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -388,7 +342,7 @@
 
       const data = await res.json();
       if (data.success) {
-        alert("🎉 " + data.message + "\nOrder ID: " + data.order_id);
+        alert("🎉 " + data.message);
         window.location.href = "/orders";
       } else {
         alert("❌ " + data.message);
