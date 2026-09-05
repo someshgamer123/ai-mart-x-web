@@ -1,105 +1,70 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="margin-bottom: 24px;">
-  <h1>💎 My Wallet & Funds Hub</h1>
-  <p style="color: var(--text-muted);">Balance: <b style="color: #fbbf24;">{{ user.coins }} Mart X Coins</b> (Rate: ₹1 INR = {{ coins_per_inr }} Coins)</p>
+  <h1>💎 My Wallet & Balance Hub</h1>
+  <p style="color: var(--text-muted);">
+    Available Balance: <b style="color: #fbbf24; font-size: 1.15rem;">{{ user.coins }} Mart X Coins</b>
+  </p>
 </div>
 
 <div class="grid" style="margin-bottom: 30px;">
-  <!-- Add Funds Card -->
-  <div class="card">
-    <div class="card-title">➕ Add Funds (Instant UPI)</div>
-    <p style="color: var(--text-muted); margin-bottom: 16px;">Generate auto-verifying UPI QR code.</p>
-    <input type="number" id="depositCoinsInput" placeholder="Enter coins (e.g. 500)" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff; margin-bottom: 12px;">
-    <button class="btn" onclick="startDeposit()">Generate UPI Payment QR</button>
+  
+  <!-- Add Funds (Marked Upcoming) -->
+  <div class="card" style="border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(20, 24, 40, 0.85);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <span class="card-title" style="margin-bottom: 0;">➕ Add Funds (Instant UPI)</span>
+      <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(245, 158, 11, 0.4);">
+        🚀 UPCOMING
+      </span>
+    </div>
+    
+    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
+      Automatic Instant UPI QR gateway is currently under integration.
+    </p>
+
+    <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; margin-bottom: 16px; border: 1px dashed var(--border-card);">
+      <p style="font-size: 0.85rem; color: #38bdf8; margin-bottom: 4px;">💡 <b>Want to add coins right now?</b></p>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">
+        Message Admin directly on Telegram to pay via UPI and receive a 1-tap Gift Code for coins!
+      </p>
+    </div>
+
+    <a href="https://t.me/{{ support_handle }}" target="_blank" class="btn" style="text-align: center; text-decoration: none;">
+      💬 Contact Admin to Add Coins
+    </a>
   </div>
 
-  <!-- Redeem Gift Code Card -->
+  <!-- Redeem Gift Code (100% Active) -->
   <div class="card">
     <div class="card-title">🎁 Redeem Gift Code</div>
-    <p style="color: var(--text-muted); margin-bottom: 16px;">Enter your MXGC-XXXX gift code:</p>
-    <input type="text" id="giftCodeInput" placeholder="MXGC-XXXX-YYYY" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff; margin-bottom: 12px;">
-    <button class="btn btn-secondary" onclick="redeemGiftCode()">Redeem Coins</button>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+      Enter the code provided by Admin or friends to claim free coins:
+    </p>
+    <input type="text" id="giftCodeInput" placeholder="e.g. MXGC-XXXX-YYYY" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff; margin-bottom: 14px; font-family: monospace; font-size: 1rem;">
+    <button class="btn" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="redeemGiftCode()">
+      ✅ Redeem Coins Now
+    </button>
   </div>
+
 </div>
 
-<!-- Modal for UPI QR Auto Verification -->
-<div class="modal" id="qrModal">
-  <div class="modal-content" style="text-align: center;">
-    <h3 style="margin-bottom: 12px;">Scan UPI QR to Pay</h3>
-    <p id="qrAmountText" style="color: #fbbf24; font-weight: 700;"></p>
-    <img id="qrImg" src="" alt="UPI QR" style="margin: 16px auto; border-radius: 12px; border: 2px solid var(--border-card);">
-    <p style="font-size: 0.85rem; color: var(--text-muted);">Waiting for automatic confirmation from UPI engine... Don't close this window.</p>
-    <button class="btn btn-danger" style="margin-top: 14px;" onclick="closeQrModal()">Cancel</button>
+<!-- Free Coins Alternative: Refer & Earn -->
+<div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h3 style="margin-bottom: 6px;">👥 Need Free Mart X Coins?</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Invite your friends to Ai Mart X Web and earn free coins on every registration!
+      </p>
+    </div>
+    <a href="/refer" class="btn btn-secondary">Open Refer & Earn</a>
   </div>
-</div>
-
-<!-- Recent Deposits -->
-<div class="card">
-  <div class="card-title">📜 Deposit History</div>
-  <table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem;">
-    <thead>
-      <tr style="border-bottom: 1px solid var(--border-card); text-align: left; color: var(--text-muted);">
-        <th style="padding: 8px;">ID</th>
-        <th style="padding: 8px;">Coins</th>
-        <th style="padding: 8px;">Amount</th>
-        <th style="padding: 8px;">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for d in deposits %}
-        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-          <td style="padding: 8px; font-family: monospace;">{{ d.deposit_id }}</td>
-          <td style="padding: 8px;">+{{ d.coins_to_add }}</td>
-          <td style="padding: 8px;">₹{{ d.amount_fiat }}</td>
-          <td style="padding: 8px; color: {% if d.status == 'COMPLETED' %}var(--success){% else %}var(--gold){% endif %};">{{ d.status }}</td>
-        </tr>
-      {% else %}
-        <tr><td colspan="4" style="padding: 12px; text-align: center; color: var(--text-muted);">No deposits found.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
 </div>
 
 <script>
-let pollInterval = null;
-
-async function startDeposit() {
-  const coins = document.getElementById("depositCoinsInput").value;
-  if (!coins || coins <= 0) return alert("Enter a valid coins amount");
-
-  const res = await fetch("/api/create-deposit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ coins: parseInt(coins) })
-  });
-  const data = await res.json();
-  if (data.success) {
-    document.getElementById("qrAmountText").innerText = `Pay ₹${data.amount_inr} INR for +${data.coins} Coins`;
-    document.getElementById("qrImg").src = data.qr_url;
-    document.getElementById("qrModal").style.display = "flex";
-
-    // Auto-Poll for payment completion
-    pollInterval = setInterval(async () => {
-      const chk = await fetch(`/api/check-deposit-status/${data.deposit_id}`);
-      const cdata = await chk.json();
-      if (cdata.status === "COMPLETED") {
-        clearInterval(pollInterval);
-        alert("🎉 Payment Verified! Coins added to your wallet.");
-        window.location.reload();
-      }
-    }, 3000);
-  }
-}
-
-function closeQrModal() {
-  if (pollInterval) clearInterval(pollInterval);
-  document.getElementById("qrModal").style.display = "none";
-}
-
 async function redeemGiftCode() {
   const code = document.getElementById("giftCodeInput").value.trim();
-  if (!code) return alert("Enter gift code");
+  if (!code) return alert("Please enter a valid Gift Code.");
 
   const res = await fetch("/api/redeem-gift-code", {
     method: "POST",
@@ -108,7 +73,9 @@ async function redeemGiftCode() {
   });
   const data = await res.json();
   alert(data.message);
-  if (data.success) window.location.reload();
+  if (data.success) {
+    window.location.reload();
+  }
 }
 </script>
 {% endblock %}
