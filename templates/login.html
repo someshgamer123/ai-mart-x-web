@@ -1,42 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="max-width: 420px; margin: 40px auto;" class="card">
+<div style="max-width: 400px; margin: 48px auto;" class="card">
   
-  <div style="display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
-    <button id="tabLogin" class="btn" style="flex: 1; border-radius: 8px 8px 0 0; background: transparent; color: #fff; font-weight: 700; border-bottom: 2px solid var(--primary-glow);" onclick="switchTab('login')">Login</button>
-    <button id="tabRegister" class="btn" style="flex: 1; border-radius: 8px 8px 0 0; background: transparent; color: var(--muted); font-weight: 700;" onclick="switchTab('register')">Register</button>
+  <div style="display: flex; border-bottom: 1px solid var(--border); margin-bottom: 24px;">
+    <button id="tabLogin" class="btn" style="flex: 1; border-radius: 6px 6px 0 0; background: transparent; color: #fff; font-weight: 600; border-bottom: 2px solid var(--primary);" onclick="switchTab('login')">Sign In</button>
+    <button id="tabRegister" class="btn" style="flex: 1; border-radius: 6px 6px 0 0; background: transparent; color: var(--text-muted); font-weight: 600;" onclick="switchTab('register')">Register</button>
   </div>
 
-  <!-- Login Form -->
+  <!-- Sign In Form -->
   <form id="formLogin" method="POST" action="/login">
     <input type="hidden" name="action" value="login">
-    <div style="margin-bottom: 14px;">
-      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Gmail / Email Address</label>
-      <input type="email" name="email" placeholder="example@gmail.com" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    <div style="margin-bottom: 16px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">Gmail / Email Address</label>
+      <input type="email" name="email" placeholder="you@gmail.com" required style="width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #0b0f19; color: #fff; font-size: 0.95rem;">
     </div>
-    <div style="margin-bottom: 20px;">
-      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Password</label>
-      <input type="password" name="password" placeholder="Enter password" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    <div style="margin-bottom: 24px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">Password</label>
+      <input type="password" name="password" placeholder="••••••••" required style="width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #0b0f19; color: #fff; font-size: 0.95rem;">
     </div>
-    <button type="submit" class="btn" style="width: 100%;">Login to Account</button>
+    <button type="submit" class="btn" style="width: 100%;">Sign In</button>
   </form>
 
   <!-- Register Form -->
   <form id="formRegister" method="POST" action="/login" style="display: none;">
     <input type="hidden" name="action" value="register">
-    <div style="margin-bottom: 14px;">
-      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Gmail / Email Address</label>
-      <input type="email" name="email" placeholder="example@gmail.com" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    <div style="margin-bottom: 16px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">Gmail / Email Address</label>
+      <input type="email" name="email" placeholder="you@gmail.com" required style="width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #0b0f19; color: #fff; font-size: 0.95rem;">
     </div>
-    <div style="margin-bottom: 14px;">
-      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Create Password</label>
-      <input type="password" name="password" placeholder="Min 6 characters" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    <div style="margin-bottom: 16px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">Choose Password (Min 6 chars)</label>
+      <input type="password" name="password" placeholder="••••••••" required style="width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #0b0f19; color: #fff; font-size: 0.95rem;">
     </div>
-    <div style="margin-bottom: 20px;">
-      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Referral Code (Optional)</label>
-      <input type="text" name="ref_code" value="{{ request.args.get('ref', '') }}" placeholder="e.g. MXR123" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    <div style="margin-bottom: 24px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">Referral Code (Optional)</label>
+      <input type="text" name="ref_code" value="{{ request.args.get('ref', '') }}" placeholder="e.g. MXR123" style="width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #0b0f19; color: #fff; font-size: 0.95rem;">
     </div>
-    <button type="submit" class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669);">Create Account</button>
+    <button type="submit" class="btn" style="width: 100%; background: #10b981;">Create Account</button>
   </form>
 </div>
 
@@ -50,17 +50,17 @@ function switchTab(tab) {
   if (tab === 'login') {
     fLogin.style.display = "block";
     fReg.style.display = "none";
-    tLogin.style.borderBottom = "2px solid var(--primary-glow)";
+    tLogin.style.borderBottom = "2px solid var(--primary)";
     tLogin.style.color = "#fff";
     tReg.style.borderBottom = "none";
-    tReg.style.color = "var(--muted)";
+    tReg.style.color = "var(--text-muted)";
   } else {
     fLogin.style.display = "none";
     fReg.style.display = "block";
     tReg.style.borderBottom = "2px solid #10b981";
     tReg.style.color = "#fff";
     tLogin.style.borderBottom = "none";
-    tLogin.style.color = "var(--muted)";
+    tLogin.style.color = "var(--text-muted)";
   }
 }
 </script>
