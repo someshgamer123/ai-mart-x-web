@@ -2,51 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Portal Gateway</title>
+  <title>Admin Gateway | Ai Mart X</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     body {
-      background: radial-gradient(circle at 50% 20%, #151a3a 0%, #060813 80%);
-      color: #fff;
+      background: #090d16;
+      color: #f9fafb;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
     .box {
-      background: rgba(16, 21, 40, 0.85);
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-      border-radius: 16px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
       padding: 36px;
       width: 380px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
     }
     input {
       width: 100%;
-      padding: 12px;
+      padding: 11px 14px;
       margin-bottom: 16px;
-      background: #02040a;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 8px;
+      background: #0b0f19;
+      border: 1px solid #374151;
+      border-radius: 6px;
       color: #fff;
       font-size: 0.95rem;
     }
     .btn {
       width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      padding: 11px;
+      background: #4f46e5;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       color: #fff;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
     }
+    .btn:hover { background: #4338ca; }
     .alert {
       padding: 10px 14px;
-      border-radius: 8px;
-      margin-bottom: 14px;
+      border-radius: 6px;
+      margin-bottom: 16px;
       font-size: 0.85rem;
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.15);
       border: 1px solid #ef4444;
       color: #fca5a5;
     }
@@ -54,8 +55,8 @@
 </head>
 <body>
   <div class="box">
-    <h2 style="text-align: center; margin-bottom: 8px;">👑 Admin Control Center</h2>
-    <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 20px;">Ai Mart X Standalone Engine</p>
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;">Administrator Gateway</h2>
+    <p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 20px;">Ai Mart X Standalone Engine</p>
     
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -66,9 +67,13 @@
     {% endwith %}
 
     <form method="POST" action="/admin/login">
-      <input type="text" name="username" placeholder="Admin Username" required autofocus>
-      <input type="password" name="password" placeholder="Admin Password" required>
-      <button class="btn" type="submit">Authorize Entrance</button>
+      <label style="display: block; margin-bottom: 6px; font-size: 0.82rem; color: #9ca3af;">Username</label>
+      <input type="text" name="username" placeholder="admin" required autofocus>
+      
+      <label style="display: block; margin-bottom: 6px; font-size: 0.82rem; color: #9ca3af;">Password</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+      
+      <button class="btn" type="submit">Verify & Access</button>
     </form>
   </div>
 </body>
