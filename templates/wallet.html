@@ -1,70 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="margin-bottom: 24px;">
-  <h1>💎 My Wallet & Balance Hub</h1>
-  <p style="color: var(--text-muted);">
-    Available Balance: <b style="color: #fbbf24; font-size: 1.15rem;">{{ user.coins }} Mart X Coins</b>
-  </p>
+<div style="margin-bottom: 28px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 6px;">My Wallet</h1>
+  <p style="color: var(--text-muted);">Balance: <b style="color: var(--gold);">{{ user.coins }} Mart X Coins</b></p>
 </div>
 
-<div class="grid" style="margin-bottom: 30px;">
-  
-  <!-- Add Funds (Marked Upcoming) -->
-  <div class="card" style="border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(20, 24, 40, 0.85);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <span class="card-title" style="margin-bottom: 0;">➕ Add Funds (Instant UPI)</span>
-      <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(245, 158, 11, 0.4);">
-        🚀 UPCOMING
-      </span>
-    </div>
-    
-    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
-      Automatic Instant UPI QR gateway is currently under integration.
-    </p>
-
-    <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; margin-bottom: 16px; border: 1px dashed var(--border-card);">
-      <p style="font-size: 0.85rem; color: #38bdf8; margin-bottom: 4px;">💡 <b>Want to add coins right now?</b></p>
-      <p style="font-size: 0.8rem; color: var(--text-muted);">
-        Message Admin directly on Telegram to pay via UPI and receive a 1-tap Gift Code for coins!
-      </p>
-    </div>
-
-    <a href="https://t.me/{{ support_handle }}" target="_blank" class="btn" style="text-align: center; text-decoration: none;">
-      💬 Contact Admin to Add Coins
-    </a>
-  </div>
-
-  <!-- Redeem Gift Code (100% Active) -->
+<div class="grid" style="margin-bottom: 28px;">
+  <!-- Redeem Gift Code -->
   <div class="card">
-    <div class="card-title">🎁 Redeem Gift Code</div>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
-      Enter the code provided by Admin or friends to claim free coins:
+    <div class="card-title">Redeem Gift Code</div>
+    <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px;">
+      Enter your gift code below to claim Mart X Coins directly to your balance:
     </p>
-    <input type="text" id="giftCodeInput" placeholder="e.g. MXGC-XXXX-YYYY" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff; margin-bottom: 14px; font-family: monospace; font-size: 1rem;">
-    <button class="btn" style="background: linear-gradient(135deg, #10b981, #059669);" onclick="redeemGiftCode()">
-      ✅ Redeem Coins Now
-    </button>
+    <input type="text" id="giftCodeInput" placeholder="MXGC-XXXX-YYYY" style="width: 100%; padding: 11px 14px; border-radius: 6px; border: 1px solid var(--border-light); background: #0b0f19; color: #fff; font-family: monospace; font-size: 0.95rem; margin-bottom: 14px;">
+    <button class="btn" onclick="redeemGiftCode()">Redeem Coins</button>
   </div>
 
-</div>
-
-<!-- Free Coins Alternative: Refer & Earn -->
-<div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.1)); border: 1px solid rgba(99, 102, 241, 0.3);">
-  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-    <div>
-      <h3 style="margin-bottom: 6px;">👥 Need Free Mart X Coins?</h3>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">
-        Invite your friends to Ai Mart X Web and earn free coins on every registration!
-      </p>
+  <!-- Add Funds Notice -->
+  <div class="card" style="border-color: rgba(251, 191, 36, 0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div class="card-title" style="margin-bottom: 0;">Add Funds (Instant UPI)</div>
+      <span style="font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 9999px; background: rgba(251, 191, 36, 0.15); color: var(--gold);">COMING SOON</span>
     </div>
-    <a href="/refer" class="btn btn-secondary">Open Refer & Earn</a>
+    <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 16px;">
+      Direct automated UPI payment integration is currently underway.
+    </p>
+    <a href="https://t.me/{{ support_handle }}" target="_blank" class="btn btn-secondary" style="text-decoration: none; text-align: center;">Contact Admin to Load Coins</a>
   </div>
 </div>
 
 <script>
 async function redeemGiftCode() {
   const code = document.getElementById("giftCodeInput").value.trim();
-  if (!code) return alert("Please enter a valid Gift Code.");
+  if (!code) return alert("Please enter a gift code.");
 
   const res = await fetch("/api/redeem-gift-code", {
     method: "POST",
@@ -73,9 +41,7 @@ async function redeemGiftCode() {
   });
   const data = await res.json();
   alert(data.message);
-  if (data.success) {
-    window.location.reload();
-  }
+  if (data.success) window.location.reload();
 }
 </script>
 {% endblock %}
