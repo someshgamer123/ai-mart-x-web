@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ai Mart X Web - Instant Store</title>
+  <title>Ai Mart X | Digital Store & Wallet</title>
   
   <style>
     :root {
-      --bg: #070913;
-      --card-bg: rgba(16, 21, 38, 0.75);
-      --border: rgba(255, 255, 255, 0.08);
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-hover: #151e33;
+      --border: #1f2937;
+      --border-light: #374151;
       --primary: #4f46e5;
-      --primary-glow: #6366f1;
-      --accent: #06b6d4;
-      --gold: #f59e0b;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --primary-hover: #4338ca;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --gold: #fbbf24;
       --success: #10b981;
       --danger: #ef4444;
     }
@@ -24,26 +25,26 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-user-select: none;
       user-select: none;
     }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #101530 0%, var(--bg) 70%);
+      background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* Navbar with Menu on the LEFT */
+    /* Executive Navbar */
     .navbar {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(7, 9, 19, 0.85);
-      backdrop-filter: blur(20px);
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 14px 24px;
       display: flex;
@@ -54,67 +55,63 @@
     .nav-left {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
 
     .menu-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
+      background: #1f2937;
+      border: 1px solid var(--border-light);
       color: #fff;
       padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: 0.2s;
-    }
-    .menu-btn:hover {
-      background: rgba(99, 102, 241, 0.2);
-      border-color: var(--primary-glow);
-    }
-
-    .brand {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #fff;
-      text-decoration: none;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .menu-btn:hover {
+      background: #374151;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.02em;
     }
     .brand span {
-      background: linear-gradient(135deg, var(--accent), var(--primary-glow));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #6366f1;
     }
 
     .badge-coins {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      color: var(--gold);
       padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.85rem;
     }
 
-    /* LEFT Slide Drawer Menu */
+    /* Left Drawer Navigation */
     .drawer {
       position: fixed;
       top: 0;
       left: -320px;
-      width: 300px;
+      width: 290px;
       height: 100%;
-      background: #0c1024;
+      background: #0f172a;
       border-right: 1px solid var(--border);
       z-index: 1000;
-      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       padding: 24px;
       display: flex;
       flex-direction: column;
-      box-shadow: 10px 0 40px rgba(0,0,0,0.7);
+      box-shadow: 16px 0 40px rgba(0,0,0,0.5);
     }
     .drawer.open {
       left: 0;
@@ -128,42 +125,40 @@
       border-bottom: 1px solid var(--border);
       padding-bottom: 12px;
     }
-
     .drawer-close {
       background: transparent;
       border: none;
-      color: var(--muted);
-      font-size: 1.6rem;
+      color: var(--text-muted);
+      font-size: 1.5rem;
       cursor: pointer;
     }
 
     .drawer-menu {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
-
     .drawer-link {
       display: flex;
       align-items: center;
       gap: 12px;
-      color: var(--text);
+      color: #e5e7eb;
       text-decoration: none;
-      padding: 12px 16px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid transparent;
-      transition: 0.2s;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      font-size: 0.95rem;
+      font-weight: 500;
     }
     .drawer-link:hover {
-      background: rgba(79, 70, 229, 0.15);
-      border-color: var(--primary-glow);
-      transform: translateX(4px);
+      background: #1e293b;
+      color: #fff;
     }
 
+    /* Content Layout */
     .container {
-      max-width: 1200px;
-      margin: 30px auto;
+      max-width: 1120px;
+      margin: 32px auto;
       padding: 0 20px;
       flex: 1;
       width: 100%;
@@ -172,80 +167,84 @@
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
+      gap: 20px;
     }
 
     .card {
       background: var(--card-bg);
-      backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: 0.2s;
+      transition: border-color 0.15s ease;
     }
     .card:hover {
-      border-color: rgba(99, 102, 241, 0.4);
-      transform: translateY(-2px);
+      border-color: var(--border-light);
     }
 
     .card-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
     }
 
     .stock-tag {
       display: inline-block;
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
       border-radius: 6px;
       margin-bottom: 12px;
     }
-    .in-stock { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    .out-stock { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    .in-stock { background: rgba(16, 185, 129, 0.1); color: #34d399; }
+    .out-stock { background: rgba(239, 68, 68, 0.1); color: #f87171; }
 
     .price-tag {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #fbbf24;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gold);
       margin-bottom: 16px;
     }
 
     .btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-glow));
+      background: var(--primary);
       color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
+      border: 1px solid transparent;
+      padding: 10px 18px;
+      border-radius: 8px;
       font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
       text-decoration: none;
       text-align: center;
-      transition: 0.2s;
+      transition: background-color 0.15s ease;
       display: inline-block;
     }
-    .btn:hover { filter: brightness(1.15); }
-    .btn-secondary { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #1f2937; border-color: var(--border-light); color: #e5e7eb; }
+    .btn-secondary:hover { background: #374151; }
 
     .copy-box {
-      background: #02040a;
-      border: 1px dashed rgba(255, 255, 255, 0.25);
-      border-radius: 8px;
+      background: #0b0f19;
+      border: 1px dashed var(--border-light);
+      border-radius: 6px;
       padding: 12px;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       color: #38bdf8;
       margin-top: 8px;
       cursor: pointer;
       word-break: break-all;
+      font-size: 0.85rem;
+    }
+    .copy-box:hover {
+      border-color: #38bdf8;
     }
   </style>
 
-  <!-- Anti-F12 Script -->
+  <!-- Client-side anti-inspect shield -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), false);
     document.addEventListener('keydown', function(e) {
@@ -261,11 +260,11 @@
 </head>
 <body>
 
-  <!-- Navbar (Menu Button on the LEFT) -->
+  <!-- Header with Left-aligned Menu -->
   <header class="navbar">
     <div class="nav-left">
       <button class="menu-btn" onclick="toggleDrawer()">☰ Menu</button>
-      <a href="/" class="brand">⚡ <span>Ai Mart X</span></a>
+      <a href="/" class="brand">Ai Mart <span>X</span></a>
     </div>
     <div>
       {% if current_user %}
@@ -274,33 +273,33 @@
     </div>
   </header>
 
-  <!-- Left Drawer (Users Page me Zero Admin Option) -->
+  <!-- Left Drawer Navigation (Zero Admin Link for Buyers) -->
   <div class="drawer" id="menuDrawer">
     <div class="drawer-header">
-      <h3 style="font-size: 1.1rem;">Store Menu</h3>
+      <h3 style="font-size: 1rem; font-weight: 600;">Navigation</h3>
       <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
     </div>
     <div class="drawer-menu">
-      <a href="/" class="drawer-link" onclick="toggleDrawer()">⚡ Buy Products</a>
-      <a href="/wallet" class="drawer-link" onclick="toggleDrawer()">💎 My Wallet</a>
+      <a href="/" class="drawer-link" onclick="toggleDrawer()">🛍️ Store Products</a>
+      <a href="/wallet" class="drawer-link" onclick="toggleDrawer()">💳 My Wallet</a>
       <a href="/orders" class="drawer-link" onclick="toggleDrawer()">📦 My Orders</a>
       <a href="/refer" class="drawer-link" onclick="toggleDrawer()">👥 Refer & Earn</a>
       {% if current_user %}
-        <a href="/logout" class="drawer-link" style="color: var(--danger);">🚪 Logout ({{ current_user.email }})</a>
+        <a href="/logout" class="drawer-link" style="color: var(--danger);">🚪 Sign Out ({{ current_user.email }})</a>
       {% else %}
-        <a href="/login" class="drawer-link">🔑 Login / Register</a>
+        <a href="/login" class="drawer-link">🔑 Sign In / Register</a>
       {% endif %}
-      <hr style="border-color: var(--border); margin: 8px 0;">
-      <a href="https://t.me/{{ support_handle }}" target="_blank" class="drawer-link">🔔 Support (@{{ support_handle }})</a>
+      <hr style="border-color: var(--border); margin: 12px 0;">
+      <a href="https://t.me/{{ support_handle }}" target="_blank" class="drawer-link">💬 Support (@{{ support_handle }})</a>
     </div>
   </div>
 
   <main class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 24px;">
           {% for category, message in messages %}
-            <div style="padding: 12px 18px; border-radius: 8px; margin-bottom: 8px; background: {% if category == 'danger' %}rgba(239,68,68,0.2){% else %}rgba(16,185,129,0.2){% endif %}; border: 1px solid {% if category == 'danger' %}var(--danger){% else %}var(--success){% endif %}; color: #fff;">
+            <div style="padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; background: {% if category == 'danger' %}rgba(239,68,68,0.15){% else %}rgba(16,185,129,0.15){% endif %}; border: 1px solid {% if category == 'danger' %}var(--danger){% else %}var(--success){% endif %}; color: #fff; font-size: 0.9rem;">
               {{ message }}
             </div>
           {% endfor %}
@@ -318,15 +317,15 @@
 
     function copyText(text) {
       navigator.clipboard.writeText(text).then(() => {
-        alert("Copied: " + text);
+        alert("Copied to clipboard:\n" + text);
       });
     }
 
     async function openCheckout(productId, productName, price) {
-      const qty = prompt(`Quantity for ${productName}:`, "1");
+      const qty = prompt(`Enter quantity for ${productName}:`, "1");
       if (!qty || isNaN(qty) || parseInt(qty) <= 0) return;
 
-      const coupon = prompt("Discount Coupon (Optional):", "");
+      const coupon = prompt("Discount coupon code (optional):", "");
 
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -340,10 +339,10 @@
 
       const data = await res.json();
       if (data.success) {
-        alert("🎉 " + data.message);
+        alert(data.message);
         window.location.href = "/orders";
       } else {
-        alert("❌ " + data.message);
+        alert("Transaction Notice: " + data.message);
       }
     }
   </script>
