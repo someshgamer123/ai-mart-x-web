@@ -16,6 +16,7 @@ gift_codes_col = db["web_gift_codes"]
 coupons_col = db["web_coupons"]
 settings_col = db["web_settings"]
 counters_col = db["web_counters"]
+admin_col = db["web_admin_auth"]
 
 def get_next_sequence(name: str) -> int:
     seq = counters_col.find_one_and_update(
@@ -33,19 +34,70 @@ def init_db():
     orders_col.create_index("order_id", unique=True)
     gift_codes_col.create_index("code", unique=True)
     coupons_col.create_index("code", unique=True)
+    
+    # Initialize default admin credentials in database if not present
+    if admin_col.count_documents({}) == 0:
+        admin_col.insert_one({
+            "username": Config.DEFAULT_ADMIN_USERNAME.lower().strip(),
+            "password": generate_password_hash(Config.DEFAULT_ADMIN_PASSWORD.strip()),
+            "updated_at": time.time()
+        })
 
-# ==================== USER AUTH (GMAIL & PASSWORD) ====================
+# ==================== ADMIN CREDENTIALS ENGINE ====================
+
+def verify_admin_login(username: str, password: str) -> bool:
+    clean_uname = username.strip().lower()
+    clean_pass = password.strip()
+    
+    admin_doc = admin_col.find_one({"username": clean_uname})
+    if not admin_doc:
+        # Fallback to default credentials if collection was reset
+        if clean_uname == Config.DEFAULT_ADMIN_USERNAME.lower() and clean_pass == Config.DEFAULT_ADMIN_PASSWORD:
+            admin_col.update_one(
+                {"username": clean_uname},
+                {"$set": {"username": clean_uname, "password": generate_password_hash(clean_pass), "updated_at": time.time()}},
+                upsert=True
+            )
+            return True
+        return False
+        
+    return check_password_hash(admin_doc["password"], clean_pass)
+
+def update_admin_credentials(current_username: str, new_username: str, new_password: str) -> tuple:
+    clean_u = new_username.strip().lower()
+    clean_p = new_password.strip()
+    
+    if len(clean_u) < 3:
+        return False, "Username must be at least 3 characters long."
+    if len(clean_p) < 6:
+        return False, "Password must be at least 6 characters long."
+        
+    admin_col.delete_many({})  # Ensure single active admin record
+    admin_col.insert_one({
+        "username": clean_u,
+        "password": generate_password_hash(clean_p),
+        "updated_at": time.time()
+    })
+    return True, "Admin credentials updated successfully!"
+
+def get_current_admin_username() -> str:
+    admin_doc = admin_col.find_one({})
+    if admin_doc:
+        return admin_doc.get("username", "admin")
+    return Config.DEFAULT_ADMIN_USERNAME
+
+# ==================== BUYER AUTHENTICATION (EMAIL & PASSWORD) ====================
 
 def register_user(email: str, password: str, ref_code: str = None) -> tuple:
     clean_email = email.strip().lower()
     if not clean_email or "@" not in clean_email:
-        return False, "Kripya valid Gmail/Email address enter karein."
+        return False, "Please provide a valid email address."
     
     if len(password) < 6:
-        return False, "Password kam se kam 6 characters ka hona chahiye."
+        return False, "Password must be at least 6 characters long."
 
     if users_col.find_one({"email": clean_email}):
-        return False, "Yeh email pehle se registered hai. Kripya Login karein."
+        return False, "An account with this email already exists. Please log in."
 
     referrer_id = None
     if ref_code:
@@ -56,7 +108,7 @@ def register_user(email: str, password: str, ref_code: str = None) -> tuple:
     new_ref = "MXR" + secrets.token_hex(3).upper()
     hashed_pw = generate_password_hash(password)
 
-    user_id = users_col.insert_one({
+    users_col.insert_one({
         "email": clean_email,
         "password": hashed_pw,
         "coins": 0,
@@ -65,9 +117,8 @@ def register_user(email: str, password: str, ref_code: str = None) -> tuple:
         "refer_count": 0,
         "refer_earnings": 0,
         "created_at": time.time()
-    }).inserted_id
+    })
 
-    # Referral reward credit
     if referrer_id:
         try:
             reward = int(get_setting("refer_coins_reward", "10"))
@@ -78,7 +129,7 @@ def register_user(email: str, password: str, ref_code: str = None) -> tuple:
             {"$inc": {"coins": reward, "refer_count": 1, "refer_earnings": reward}}
         )
 
-    return True, "Registration safal raha! Aap login kar sakte hain."
+    return True, "Account registered successfully! You can now log in."
 
 def authenticate_user(email: str, password: str):
     clean_email = email.strip().lower()
@@ -104,7 +155,7 @@ def add_user_coins(email: str, coins: int):
         return
     users_col.update_one({"email": email.strip().lower()}, {"$inc": {"coins": coins}})
 
-# ==================== PRODUCTS & STOCKS ====================
+# ==================== PRODUCTS & STOCK MANAGEMENT ====================
 
 def get_all_products(active_only=True):
     query = {"is_active": 1} if active_only else {}
@@ -123,8 +174,8 @@ def add_product(name: str, description: str, price_coins: int):
     p_id = get_next_sequence("product_id")
     products_col.insert_one({
         "id": p_id,
-        "name": name,
-        "description": description,
+        "name": name.strip(),
+        "description": description.strip(),
         "price": price_coins,
         "stock_items": [],
         "is_active": 1,
@@ -159,7 +210,7 @@ def pop_product_stock_items(product_id: int, qty: int):
     products_col.update_one({"id": product_id}, {"$set": {"stock_items": remaining}})
     return delivered
 
-# ==================== ORDERS & CODES ====================
+# ==================== ORDERS ====================
 
 def create_order(email: str, product_id: int, product_name: str, qty: int, total_coins: int, delivered_items: list):
     order_id = f"ORD-{secrets.token_hex(4).upper()}"
@@ -179,18 +230,20 @@ def create_order(email: str, product_id: int, product_name: str, qty: int, total
 def get_user_orders(email: str):
     return list(orders_col.find({"email": email.strip().lower()}).sort("created_at", -1))
 
+# ==================== GIFT CODES & COUPONS ====================
+
 def redeem_gift_code(code: str, email: str):
     clean_code = code.upper().strip()
     item = gift_codes_col.find_one({"code": clean_code, "is_redeemed": False})
     if not item:
-        return False, "Invalid ya pehle se use kiya gaya Gift Code."
+        return False, "Invalid or expired gift code."
     
     gift_codes_col.update_one(
         {"code": clean_code},
         {"$set": {"is_redeemed": True, "redeemed_by": email.lower(), "redeemed_at": time.time()}}
     )
     add_user_coins(email, item["coins"])
-    return True, f"+{item['coins']} Mart X Coins wallet me jud gaye!"
+    return True, f"Successfully redeemed +{item['coins']} Mart X Coins to your wallet!"
 
 def create_admin_gift_code(coins: int, created_by="admin"):
     raw = secrets.token_hex(6).upper()
