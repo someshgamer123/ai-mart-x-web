@@ -2,17 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Authentication | Ai Mart X</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', filename='js/security.js') }}"></script>
+  <title>Admin Login | Ai Mart X</title>
+  <style>
+    body {
+      background: #060813;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: rgba(15, 20, 38, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 14px;
+      background: #02040a;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-  <div class="card" style="width: 360px;">
-    <h2 style="margin-bottom: 16px; text-align: center;">👑 Admin Gate</h2>
+<body>
+  <div class="card">
+    <h2 style="margin-bottom: 20px; text-align: center;">👑 Admin Gate</h2>
     <form method="POST">
-      <input type="text" name="username" placeholder="Admin ID" required style="width: 100%; padding: 10px; margin-bottom: 12px; background: #000; border: 1px solid var(--border-card); color: #fff; border-radius: 8px;">
-      <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 10px; margin-bottom: 16px; background: #000; border: 1px solid var(--border-card); color: #fff; border-radius: 8px;">
-      <button class="btn" style="width: 100%;">Authorize</button>
+      <input type="text" name="username" placeholder="Admin Username" required>
+      <input type="password" name="password" placeholder="Admin Password" required>
+      <button class="btn">Authorize Access</button>
     </form>
   </div>
 </body>
