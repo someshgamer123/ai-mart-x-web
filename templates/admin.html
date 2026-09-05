@@ -2,57 +2,159 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Control Gateway</title>
+  <title>Admin Dashboard | Ai Mart X</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-    body {
-      background: radial-gradient(circle at 50% 30%, #181d3b 0%, #060813 80%);
-      color: #fff;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { background: #070913; color: #f8fafc; min-height: 100vh; }
+    .header {
+      background: rgba(14, 18, 35, 0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 32px;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      min-height: 100vh;
     }
-    .box {
-      background: rgba(18, 23, 42, 0.85);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-      border-radius: 16px;
-      padding: 36px;
-      width: 380px;
+    .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+    .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card {
+      background: rgba(18, 23, 44, 0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 20px;
     }
-    input {
+    .grid-forms { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+    .panel {
+      background: rgba(18, 23, 44, 0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    input, textarea, select {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 16px;
-      background: #02040a;
-      border: 1px solid rgba(255,255,255,0.12);
+      padding: 10px;
+      margin-bottom: 12px;
+      background: #03050c;
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px;
       color: #fff;
-      font-size: 0.95rem;
     }
     .btn {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
-      border: none;
-      border-radius: 8px;
+      background: #4f46e5;
       color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
+      width: 100%;
     }
+    .btn-danger { background: #ef4444; width: auto; padding: 6px 12px; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2 style="text-align: center; margin-bottom: 8px;">👑 Admin Control Center</h2>
-    <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Ai Mart X Unified Engine</p>
-    <form method="POST">
-      <input type="text" name="username" placeholder="Admin Username" required>
-      <input type="password" name="password" placeholder="Admin Password" required>
-      <button class="btn">Authorize Entrance</button>
-    </form>
+  <div class="header">
+    <h2>👑 Ai Mart X Control Hub</h2>
+    <a href="/admin/logout" style="color: #ef4444; text-decoration: none; font-weight: 700;">Logout</a>
+  </div>
+
+  <div class="container">
+    <!-- Live Bot & Web Synced Stats -->
+    <div class="grid-stats">
+      <div class="stat-card">
+        <p style="color: #94a3b8; font-size: 0.85rem;">Total Users</p>
+        <h2 style="color: #38bdf8; margin-top: 6px;">{{ stats.users }}</h2>
+      </div>
+      <div class="stat-card">
+        <p style="color: #94a3b8; font-size: 0.85rem;">Live Products</p>
+        <h2 style="color: #10b981; margin-top: 6px;">{{ stats.products }}</h2>
+      </div>
+      <div class="stat-card">
+        <p style="color: #94a3b8; font-size: 0.85rem;">Total Orders</p>
+        <h2 style="color: #f59e0b; margin-top: 6px;">{{ stats.orders }}</h2>
+      </div>
+      <div class="stat-card">
+        <p style="color: #94a3b8; font-size: 0.85rem;">Active Gift Codes</p>
+        <h2 style="color: #a855f7; margin-top: 6px;">{{ stats.active_codes }}</h2>
+      </div>
+    </div>
+
+    <!-- Actions & Inventory -->
+    <div class="grid-forms">
+      <!-- Add Product -->
+      <div class="panel">
+        <h3 style="margin-bottom: 14px;">⚡ Add New Product</h3>
+        <form action="/admin/add-product" method="POST">
+          <input type="text" name="name" placeholder="Product Name (e.g. Netflix 1M)" required>
+          <input type="text" name="description" placeholder="Description">
+          <input type="number" name="price" placeholder="Price in Mart X Coins" required>
+          <button class="btn">Create Product</button>
+        </form>
+      </div>
+
+      <!-- Add Stock -->
+      <div class="panel">
+        <h3 style="margin-bottom: 14px;">🔑 Add Stock (Keys / Accounts)</h3>
+        <form action="/admin/add-stock" method="POST">
+          <select name="product_id">
+            {% for p in products %}
+              <option value="{{ p.id }}">{{ p.name }} (Stock: {{ p.stock }})</option>
+            {% endfor %}
+          </select>
+          <textarea name="stock_items" placeholder="Paste items (1 per line, or link:pass)" rows="4" required></textarea>
+          <button class="btn" style="background: #10b981;">Push Stock (Instant Sync)</button>
+        </form>
+      </div>
+
+      <!-- Generate Gift Code -->
+      <div class="panel">
+        <h3 style="margin-bottom: 14px;">🎁 Issue Gift Code</h3>
+        <form action="/admin/gen-gift-code" method="POST">
+          <input type="number" name="coins" placeholder="Coin Amount (e.g. 200)" required>
+          <button class="btn" style="background: #f59e0b;">Generate Code</button>
+        </form>
+      </div>
+
+      <!-- Generate Discount Coupon -->
+      <div class="panel">
+        <h3 style="margin-bottom: 14px;">🎟️ Create Discount Coupon</h3>
+        <form action="/admin/gen-coupon" method="POST">
+          <input type="text" name="code" placeholder="Coupon Code (e.g. SAVE20)" required>
+          <input type="number" name="percent" placeholder="Discount Percentage (e.g. 20)" required>
+          <button class="btn" style="background: #a855f7;">Activate Coupon</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Product Catalog List -->
+    <div class="panel" style="margin-top: 30px;">
+      <h3 style="margin-bottom: 16px;">📦 Active Store Catalog</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <thead>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; color: #94a3b8;">
+            <th style="padding: 10px;">ID</th>
+            <th style="padding: 10px;">Name</th>
+            <th style="padding: 10px;">Price</th>
+            <th style="padding: 10px;">Stock</th>
+            <th style="padding: 10px;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in products %}
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+              <td style="padding: 10px; font-family: monospace;">#{{ p.id }}</td>
+              <td style="padding: 10px; font-weight: 600;">{{ p.name }}</td>
+              <td style="padding: 10px; color: #fbbf24;">{{ p.price }} Coins</td>
+              <td style="padding: 10px; color: {% if p.stock > 0 %}#10b981{% else %}#ef4444{% endif %};">{{ p.stock }} items</td>
+              <td style="padding: 10px;">
+                <form action="/admin/delete-product/{{ p.id }}" method="POST" style="display:inline;">
+                  <button class="btn btn-danger" onclick="return confirm('Delete this product?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </body>
 </html>
