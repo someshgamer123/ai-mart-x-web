@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ai Mart X Web - Instant Digital Store</title>
+  <title>Ai Mart X Web - Instant Store</title>
   
   <style>
     :root {
@@ -161,7 +161,6 @@
       transform: translateX(4px);
     }
 
-    /* Main Container & Grid */
     .container {
       max-width: 1200px;
       margin: 30px auto;
@@ -246,7 +245,7 @@
     }
   </style>
 
-  <!-- Anti-F12 & Security Script -->
+  <!-- Anti-F12 Script -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault(), false);
     document.addEventListener('keydown', function(e) {
@@ -262,7 +261,7 @@
 </head>
 <body>
 
-  <!-- Navigation Bar (Menu Button on the LEFT) -->
+  <!-- Navbar (Menu Button on the LEFT) -->
   <header class="navbar">
     <div class="nav-left">
       <button class="menu-btn" onclick="toggleDrawer()">☰ Menu</button>
@@ -275,10 +274,10 @@
     </div>
   </header>
 
-  <!-- Left Slide Drawer Menu (Zero Admin Link) -->
+  <!-- Left Drawer (Users Page me Zero Admin Option) -->
   <div class="drawer" id="menuDrawer">
     <div class="drawer-header">
-      <h3 style="font-size: 1.1rem;">Store Navigation</h3>
+      <h3 style="font-size: 1.1rem;">Store Menu</h3>
       <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
     </div>
     <div class="drawer-menu">
@@ -287,7 +286,7 @@
       <a href="/orders" class="drawer-link" onclick="toggleDrawer()">📦 My Orders</a>
       <a href="/refer" class="drawer-link" onclick="toggleDrawer()">👥 Refer & Earn</a>
       {% if current_user %}
-        <a href="/logout" class="drawer-link" style="color: var(--danger);">🚪 Logout ({{ current_user.username }})</a>
+        <a href="/logout" class="drawer-link" style="color: var(--danger);">🚪 Logout ({{ current_user.email }})</a>
       {% else %}
         <a href="/login" class="drawer-link">🔑 Login / Register</a>
       {% endif %}
@@ -296,7 +295,6 @@
     </div>
   </div>
 
-  <!-- Main Body Content -->
   <main class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
