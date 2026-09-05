@@ -1,51 +1,66 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="max-width: 420px; margin: 40px auto;" class="card">
-  <h2 style="margin-bottom: 18px; text-align: center;">Ai Mart X Account</h2>
   
-  <form method="POST">
-    <div style="margin-bottom: 14px;">
-      <label style="display: block; margin-bottom: 6px;">Username</label>
-      <input type="text" name="username" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
-    </div>
-    
-    <div style="margin-bottom: 14px;">
-      <label style="display: block; margin-bottom: 6px;">Password</label>
-      <input type="password" name="password" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
-    </div>
+  <div style="display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
+    <button id="tabLogin" class="btn" style="flex: 1; border-radius: 8px 8px 0 0; background: transparent; color: #fff; font-weight: 700; border-bottom: 2px solid var(--primary-glow);" onclick="switchTab('login')">Login</button>
+    <button id="tabRegister" class="btn" style="flex: 1; border-radius: 8px 8px 0 0; background: transparent; color: var(--muted); font-weight: 700;" onclick="switchTab('register')">Register</button>
+  </div>
 
-    <!-- Registration Fields -->
-    <div id="registerFields" style="display: none;">
-      <div style="margin-bottom: 14px;">
-        <label style="display: block; margin-bottom: 6px;">Mobile Number</label>
-        <input type="text" name="phone" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
-      </div>
-      <div style="margin-bottom: 14px;">
-        <label style="display: block; margin-bottom: 6px;">Referral Code (Optional)</label>
-        <input type="text" name="ref_code" value="{{ request.args.get('ref', '') }}" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-card); background: #050711; color: #fff;">
-      </div>
+  <!-- Login Form -->
+  <form id="formLogin" method="POST" action="/login">
+    <input type="hidden" name="action" value="login">
+    <div style="margin-bottom: 14px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Gmail / Email Address</label>
+      <input type="email" name="email" placeholder="example@gmail.com" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
     </div>
-
-    <input type="hidden" name="action" id="formAction" value="login">
-    <button type="submit" id="submitBtn" class="btn" style="width: 100%; margin-top: 10px;">Login</button>
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Password</label>
+      <input type="password" name="password" placeholder="Enter password" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    </div>
+    <button type="submit" class="btn" style="width: 100%;">Login to Account</button>
   </form>
 
-  <button class="btn btn-secondary" style="width: 100%; margin-top: 12px;" onclick="toggleRegisterMode()">Create New Account</button>
+  <!-- Register Form -->
+  <form id="formRegister" method="POST" action="/login" style="display: none;">
+    <input type="hidden" name="action" value="register">
+    <div style="margin-bottom: 14px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Gmail / Email Address</label>
+      <input type="email" name="email" placeholder="example@gmail.com" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    </div>
+    <div style="margin-bottom: 14px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Create Password</label>
+      <input type="password" name="password" placeholder="Min 6 characters" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    </div>
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 0.9rem;">Referral Code (Optional)</label>
+      <input type="text" name="ref_code" value="{{ request.args.get('ref', '') }}" placeholder="e.g. MXR123" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #02040a; color: #fff;">
+    </div>
+    <button type="submit" class="btn" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669);">Create Account</button>
+  </form>
 </div>
 
 <script>
-function toggleRegisterMode() {
-  const reg = document.getElementById("registerFields");
-  const act = document.getElementById("formAction");
-  const btn = document.getElementById("submitBtn");
-  if (reg.style.display === "none") {
-    reg.style.display = "block";
-    act.value = "register";
-    btn.innerText = "Register Account";
+function switchTab(tab) {
+  const fLogin = document.getElementById("formLogin");
+  const fReg = document.getElementById("formRegister");
+  const tLogin = document.getElementById("tabLogin");
+  const tReg = document.getElementById("tabRegister");
+
+  if (tab === 'login') {
+    fLogin.style.display = "block";
+    fReg.style.display = "none";
+    tLogin.style.borderBottom = "2px solid var(--primary-glow)";
+    tLogin.style.color = "#fff";
+    tReg.style.borderBottom = "none";
+    tReg.style.color = "var(--muted)";
   } else {
-    reg.style.display = "none";
-    act.value = "login";
-    btn.innerText = "Login";
+    fLogin.style.display = "none";
+    fReg.style.display = "block";
+    tReg.style.borderBottom = "2px solid #10b981";
+    tReg.style.color = "#fff";
+    tLogin.style.borderBottom = "none";
+    tLogin.style.color = "var(--muted)";
   }
 }
 </script>
