@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="margin-bottom: 28px;">
-  <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 8px;">🛍️ Digital Products Catalog</h1>
-  <p style="color: var(--text-muted);">Instant 24/7 automated delivery powered by Mart X Coins.</p>
+<div style="margin-bottom: 32px;">
+  <h1 style="font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px;">Digital Products Catalog</h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">Instant 24/7 delivery powered by Mart X Coins.</p>
 </div>
 
 <div class="grid">
@@ -11,25 +11,27 @@
       <div>
         <div class="card-title">{{ p.name }}</div>
         {% if p.stock > 0 %}
-          <div class="stock-tag in-stock">🟢 {{ p.stock }} in stock</div>
+          <div class="stock-tag in-stock">{{ p.stock }} in stock</div>
         {% else %}
-          <div class="stock-tag out-stock">🔴 Out of Stock</div>
+          <div class="stock-tag out-stock">Out of Stock</div>
         {% endif %}
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
-          {{ p.description or "Premium digital access credentials." }}
+        <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 20px;">
+          {{ p.description or "Premium verified digital product." }}
         </p>
       </div>
       <div>
         <div class="price-tag">🪙 {{ p.price }} Coins</div>
         {% if p.stock > 0 %}
-          <button class="btn" style="width: 100%;" onclick="openCheckout('{{ p.id }}', '{{ p.name }}', '{{ p.price }}')">⚡ Buy Now</button>
+          <button class="btn" style="width: 100%;" onclick="openCheckout('{{ p.id }}', '{{ p.name }}', '{{ p.price }}')">Purchase Now</button>
         {% else %}
-          <button class="btn btn-secondary" style="width: 100%; cursor: not-allowed;" disabled>Out of Stock</button>
+          <button class="btn btn-secondary" style="width: 100%; cursor: not-allowed;" disabled>Currently Unavailable</button>
         {% endif %}
       </div>
     </div>
   {% else %}
-    <p>No products available right now.</p>
+    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 48px;">
+      <p style="color: var(--text-muted);">No products are available in the store right now.</p>
+    </div>
   {% endfor %}
 </div>
 {% endblock %}
