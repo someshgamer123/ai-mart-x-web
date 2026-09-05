@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Control Gateway</title>
+  <title>Admin Portal Gateway</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
     body {
-      background: radial-gradient(circle at 50% 30%, #181d3b 0%, #060813 80%);
+      background: radial-gradient(circle at 50% 20%, #151a3a 0%, #060813 80%);
       color: #fff;
       display: flex;
       justify-content: center;
@@ -14,10 +14,9 @@
       min-height: 100vh;
     }
     .box {
-      background: rgba(18, 23, 42, 0.85);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      background: rgba(16, 21, 40, 0.85);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
       border-radius: 16px;
       padding: 36px;
       width: 380px;
@@ -27,7 +26,7 @@
       padding: 12px;
       margin-bottom: 16px;
       background: #02040a;
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 8px;
       color: #fff;
       font-size: 0.95rem;
@@ -42,16 +41,34 @@
       font-weight: 700;
       cursor: pointer;
     }
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
   </style>
 </head>
 <body>
   <div class="box">
     <h2 style="text-align: center; margin-bottom: 8px;">👑 Admin Control Center</h2>
-    <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Ai Mart X Unified Engine</p>
-    <form method="POST">
-      <input type="text" name="username" placeholder="Admin Username" required>
+    <p style="text-align: center; color: #94a3b8; font-size: 0.85rem; margin-bottom: 20px;">Ai Mart X Standalone Engine</p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/admin/login">
+      <input type="text" name="username" placeholder="Admin Username" required autofocus>
       <input type="password" name="password" placeholder="Admin Password" required>
-      <button class="btn">Authorize Entrance</button>
+      <button class="btn" type="submit">Authorize Entrance</button>
     </form>
   </div>
 </body>
