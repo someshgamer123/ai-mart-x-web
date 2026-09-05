@@ -11,7 +11,7 @@ app.config.from_object(Config)
 
 database.init_db()
 
-# Security Headers & Anti-Clickjacking Middleware
+# Security Headers Middleware
 @app.after_request
 def set_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -93,7 +93,7 @@ def wallet():
     user = database.get_user_by_username(session["user"])
     deposits = database.get_user_deposits(session["user"])
     admin_upi = database.get_setting("admin_upi", Config.DEFAULT_ADMIN_UPI)
-    pay_mode = database.get_setting("payment_mode", "AUTO")
+    pay_mode = database.get_setting("payment_mode", "MANUAL")
     return render_template("wallet.html", user=user, deposits=deposits, admin_upi=admin_upi, pay_mode=pay_mode)
 
 @app.route("/orders")
@@ -109,7 +109,7 @@ def refer():
     reward = database.get_setting("refer_coins_reward", "10")
     return render_template("refer.html", user=user, reward=reward)
 
-# ==================== TRANSACTION & PURCHASE APIS ====================
+# ==================== TRANSACTION APIS ====================
 
 @app.route("/api/checkout", methods=["POST"])
 @buyer_login_required
@@ -135,9 +135,8 @@ def api_checkout():
 
     user = database.get_user_by_username(session["user"])
     if user["coins"] < total_price:
-        return jsonify({"success": False, "message": "Insufficient Mart X Coins in wallet. Please add funds."}), 400
+        return jsonify({"success": False, "message": "Insufficient Mart X Coins. Please redeem a Gift Code or refer friends to get coins."}), 400
 
-    # Atomic deduction to prevent race condition
     if not database.atomic_deduct_coins(session["user"], total_price):
         return jsonify({"success": False, "message": "Transaction failed. Balance mismatch."}), 400
 
@@ -157,39 +156,10 @@ def api_checkout():
 @app.route("/api/create-deposit", methods=["POST"])
 @buyer_login_required
 def api_create_deposit():
-    data = request.get_json() or {}
-    coins_req = int(data.get("coins", 0))
-    dep_type = data.get("deposit_type", "ADD_FUNDS")
-
-    if coins_req <= 0:
-        return jsonify({"success": False, "message": "Invalid coins amount."}), 400
-
-    rate = float(database.get_setting("coins_per_inr", Config.DEFAULT_COINS_PER_INR))
-    amount_inr = round(coins_req / rate, 2)
-    dep_id = f"DEP-{secrets.token_hex(4).upper()}"
-
-    database.create_deposit(dep_id, session["user"], amount_inr, coins_req, deposit_type=dep_type)
-
-    admin_upi = database.get_setting("admin_upi", Config.DEFAULT_ADMIN_UPI)
-    upi_intent = f"upi://pay?pa={admin_upi}&pn=AiMartX&am={amount_inr}&cu=INR&tn={dep_id}"
-    qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={urllib.parse.quote(upi_intent)}"
-
     return jsonify({
-        "success": True,
-        "deposit_id": dep_id,
-        "amount_inr": amount_inr,
-        "coins": coins_req,
-        "admin_upi": admin_upi,
-        "qr_url": qr_url
-    })
-
-@app.route("/api/check-deposit-status/<deposit_id>")
-@buyer_login_required
-def check_deposit_status(deposit_id):
-    dep = database.deposits_col.find_one({"deposit_id": deposit_id})
-    if not dep:
-        return jsonify({"status": "NOT_FOUND"})
-    return jsonify({"status": dep["status"]})
+        "success": False,
+        "message": f"Auto UPI is upcoming. Please contact admin on Telegram (@{Config.SUPPORT_HANDLE}) to get coins via Gift Code!"
+    }), 200
 
 @app.route("/api/redeem-gift-code", methods=["POST"])
 @buyer_login_required
@@ -198,30 +168,6 @@ def api_redeem_gift_code():
     code = data.get("code", "")
     success, msg = database.redeem_gift_code(code, session["user"])
     return jsonify({"success": success, "message": msg})
-
-# ==================== SECURE PAYMENT AUTO-VERIFY WEBHOOK ====================
-
-@app.route("/webhook/payment", methods=["POST"])
-def payment_webhook():
-    """
-    Secure Webhook receiver for payment gateways (e.g., BharatPe, Cashfree, UPI gateway).
-    Supports token verification.
-    """
-    auth_header = request.headers.get("X-Webhook-Secret") or request.args.get("secret")
-    if auth_header != Config.WEBHOOK_SECRET:
-        return jsonify({"error": "Unauthorized"}), 403
-
-    payload = request.get_json() or {}
-    status = payload.get("status") or payload.get("transactionStatus") or ""
-    order_ref = payload.get("orderId") or payload.get("merchantTransactionId") or payload.get("transactionId") or ""
-    amount = float(payload.get("amount") or payload.get("txnAmount") or 0.0)
-
-    if status.upper() in ["SUCCESS", "PAID", "COMPLETED"] and order_ref:
-        success, username, coins, dep_type, gen_code = database.complete_deposit(order_ref)
-        if success:
-            return jsonify({"status": "SUCCESS", "message": f"Deposited {coins} to {username}"}), 200
-
-    return jsonify({"status": "IGNORED"}), 200
 
 # ==================== ADMIN PANEL ROUTES ====================
 
@@ -251,7 +197,7 @@ def admin_dashboard():
     pending_deposits = list(database.deposits_col.find({"status": "PENDING"}))
     rate = database.get_setting("coins_per_inr", Config.DEFAULT_COINS_PER_INR)
     admin_upi = database.get_setting("admin_upi", Config.DEFAULT_ADMIN_UPI)
-    pay_mode = database.get_setting("payment_mode", "AUTO")
+    pay_mode = database.get_setting("payment_mode", "MANUAL")
     return render_template("admin.html", stats=stats, products=products, deposits=pending_deposits, rate=rate, admin_upi=admin_upi, pay_mode=pay_mode)
 
 @app.route("/admin/add-product", methods=["POST"])
@@ -271,14 +217,6 @@ def admin_add_stock():
     stock_text = request.form.get("stock_items", "")
     added, total = database.add_product_stock_items(p_id, stock_text)
     flash(f"Added {added} items. Total stock is now {total}.", "info")
-    return redirect(url_for("admin_dashboard"))
-
-@app.route("/admin/approve-deposit/<dep_id>")
-@admin_required
-def admin_approve_deposit(dep_id):
-    success, u, c, t, g = database.complete_deposit(dep_id)
-    if success:
-        flash(f"Deposit {dep_id} approved for {u}.", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/save-settings", methods=["POST"])
